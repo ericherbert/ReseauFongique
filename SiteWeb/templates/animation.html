@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="static/css/styles.css">
+    <script type="text/javascript" src="static/js/brython.js"></script>
+    <script type="text/javascript" src="static/js/brython_stdlib.js"></script>
+    <script type="text/javascript" src="static/js/html2canvas.min.js"></script>
+    <script src="static/js/html2canvas.min.js"></script>
+    <script type="text/javascript">
+       function screen() {
+            window.scrollTo(0, 0);
+
+    // Convert the div to image (canvas)
+    html2canvas(document.getElementById("capture")).then(function (canvas) {
+
+        // Get the image data as JPEG and 0.9 quality (0.0 - 1.0)
+        link= document.createElement("a");
+        link.href= canvas.toDataURL("image/jpeg", 0.9);
+        link.download = 'screen.jpeg'
+        link.click();
+    });
+       }
+    </script>
+
+<script id="python_script" type="text/python">
+from browser import document
+
+import turtle
+import random
+
+taille = {{para.taille}}
+ecart = {{para.ecart}}
+embranchement = {{para.embranchement}}
+nbapex = {{para.apex}}
+angle1 = {{ para.angle1 }}
+ecart1 = {{para.ecart1}}
+angle2 = {{ para.angle2 }}
+ecart2 = {{para.ecart2}}
+angle3 = {{ para.angle3 }}
+ecart3 = {{para.ecart3}}
+bo=False
+
+
+
+turtle.set_defaults(
+    turtle_canvas_wrapper = document['demonstration']
+)
+
+
+listee=[nbapex]
+#Fonction pour redessiner les premieres branches en noir
+def nl(e,list_br):
+    #e=turtle t=taille de branche
+    for branche in list_br:
+        e.penup()
+        e.setheading(branche['heading'])
+        e.goto(branche['position'])
+        e.pendown()
+        e.pencolor("black")
+        e.speed(10)
+        e.backward(branche['taille'])
+        e.forward(branche['taille'])
+        branche['position'] = e.pos()
+        branche['heading'] = e.heading()
+        turtle.update()
+
+#Fonction pour redessiner en noir les branches de la liste l
+def draw_black_br(e,list_br):
+    n_etapes = 5
+    #e=turtle t=taille de la branche
+    for branche in list_br:
+        e.penup()
+        e.setheading(branche['heading'])
+        e.goto(branche['position'])
+        e.pendown()
+        e.pencolor("black")
+        e.speed(10)
+        calc = branche['taille']/n_etapes
+        #on redessine en noir en 5 étapes
+        for p in range(n_etapes):
+            e.backward(calc)
+        #revenir au point de depart
+        e.forward(branche['taille'])
+        branche['position'] = e.pos()
+        branche['heading'] = e.heading()
+        turtle.update()
+
+#Fonction pour dessiner les branches en rouges
+def draw_red_br(e,list_br):
+    print("nb of branches to draw:",len(list_br))
+    e.pencolor('red')
+    e.speed(10)
+    #e=turtle x=angle t=taille branche
+    for branche in list_br:
+        e.penup()
+        e.setheading(branche['heading'])
+        e.goto(branche['position'])
+        e.pendown()
+        if branche['direction'] == "right":
+            e.right(branche['angle'])  #angle des branches en fonction du nombre de branches
+        else:
+            e.left(branche['angle'])
+        branche['taille']
+        e.forward(branche['taille'])
+        #dessin d'un point placement de l'apex
+        e.dot(2, "red")
+        branche['position'] = e.pos()
+        branche['heading'] = e.heading()
+        turtle.update()
+
+#Fonction animation
+def anim():
+
+    apexi=[]  #liste qui contient les prochaines branches a dessiner
+    noir=[]   #liste qui contient les prochaines branches à redessiner en noir
+
+
+    main_turtle=turtle.Pen()
+    main_turtle.hideturtle()
+    main_turtle.color("white")
+    main_turtle.speed(10)
+    main_turtle.pencolor('red')
+    main_turtle.width(1)
+    turtle.tracer(30, 0)
+    #turtle.delay(0.1)
+    #on ajoute les n premieres branches dans les liste noir et apexi
+    for x in range(nbapex):
+        branche_data = {}
+        branche_data['angle'] = 180+x*360/nbapex
+        branche_data['taille'] = random.gauss(taille,ecart)
+        branche_data['position'] = main_turtle.pos()
+        branche_data['direction'] = "right"
+        branche_data['heading'] = main_turtle.heading()
+        #branche_data['turtle'] = main_turtle
+
+        apexi.append(branche_data)
+
+    draw_red_br(main_turtle,apexi)
+    #draw_red_br2(e,apexi)  #on dessine les branches de la premiere génération
+    #dans ce if else on redessine en noir les dernieres branches
+    nl(main_turtle,apexi)
+    noire=[]     #nouvelle liste pour stocker les nouvelles branches a redessiner en noir
+
+
+
+    #chaque boucle dessine une generations, on a 30 generations
+
+    for p in range(8):
+        print("generations:",p)
+        apexd=apexi #
+        apexi=[]    #on vide la liste apexi afin de la remplir de nouveaux éléments à dessiner
+
+        #on deroule la liste afin de créer de nouvelles branches à partir des anciennes branches
+        for branche in apexd:
+
+            ran=random.randrange(101)   #un random pour le pourcentage d'embranchement
+
+            #Si le random<=embranchement, on va créer à partir de l'ancienne branche, 2 nouvelles branches
+            if ran<=embranchement:
+                #a['turtle'] = turtle.Pen()
+                #b['turtle'] = turtle.Pen()
+                a=branche.copy()    #on crée un premier turtle à partir de l'ancienne branche
+                b=branche.copy()    #on crée le deuxieme turtle à partir de l'ancienne branche
+                angleb=random.gauss(angle1,ecart1)  #on défini l'angle de la branche avec la loi de guass
+                b['direction'] = "right"
+                anglea=random.gauss(angle2,ecart2)  #on défini l'angle de la branche avec la loi de guass
+                a['direction'] = "left"
+                taille1=random.gauss(taille,ecart)  #on défini la taille de la branche avec la loi de guass
+                taille2=random.gauss(taille,ecart)  #on défini la taille de la branche avec la loi de guass
+                a['angle'] = anglea
+                b['angle'] = angleb
+                a['taille'] = taille1
+                b['taille'] = taille2
+                apexi.append(a)
+                apexi.append(b)   #on ajoute les 2 turtle dans la liste des branches à dessiner en rouge
+
+            #Si le random>embranchement, on va créer à partir de l'ancienne branche, une seule branche
+            else:
+                c=branche.copy()            #on crée le turtle à partir de l'ancienne branche
+                anglec=random.gauss(angle3,ecart3)  #on défini l'angle de la branche avec la loi de guass
+                c['direction'] = "left"
+                taille1=random.gauss(taille,ecart)  #on défini la taille de la branche avec la loi de guass
+                c['angle'] = anglec
+                c['taille'] = taille1
+                apexi.append(c)   #on ajoute le turtle dans la liste des branches à dessiner en rouge
+
+        draw_red_br(main_turtle,apexi)   #on dessine les branches présentent dans apexi en rouge
+        listee.append(len(apexi))
+        #dans ce if else on redessine en noir les dernieres branches
+        if p<7:
+            draw_black_br(main_turtle,apexi)
+bo=False
+anim() #Lancement de l'animation
+bo=True
+turtle.done()
+</script>
+
+
+<script id="python_script2" type="text/python">
+from browser import document
+
+import turtle
+import random
+import python_script
+
+
+turtle.set_defaults(
+    turtle_canvas_wrapper = document['demonstration']
+)
+
+import turtle
+
+
+
+abs=turtle.Turtle()
+ord=turtle.Turtle()
+abs.up()
+ord.up()
+abs.goto(-220,-200)
+ord.goto(-220,-200)
+ord.left(90)
+abs.down()
+ord.down()
+def ecrire(t,x):
+    t.up()
+    t.left(90)
+    t.backward(12)
+    t.down()
+    t.write(x)
+    t.up()
+    t.forward(12)
+    t.right(90)
+    t.down()
+
+def ecrirea(t,x):
+    t.up()
+    t.right(90)
+    t.backward(12)
+    t.down()
+    t.write(x)
+    t.up()
+    t.forward(12)
+    t.left(90)
+    t.down()
+
+tu=turtle.Turtle()
+tu.hideturtle()
+
+tu.up()
+tu.goto(-220,-200)
+tu.down()
+tu.speed(1)
+
+if python_script.listee[8]<20:
+    m=2
+
+elif python_script.listee[8]<50:
+    m=5
+
+elif python_script.listee[8]<100:
+    m=10
+
+elif python_script.listee[8]<150:
+    m=15
+
+elif python_script.listee[8]<200:
+    m=20
+
+elif python_script.listee[8]<300:
+    m=30
+
+elif python_script.listee[8]<400:
+    m=40
+
+elif python_script.listee[8]<500:
+    m=50
+
+elif python_script.listee[8]<750:
+    m=75
+
+elif python_script.listee[8]<900:
+    m=90
+
+elif python_script.listee[8]<1200:
+    m=120
+
+elif python_script.listee[8]<1500:
+    m=150
+
+elif python_script.listee[8]<1750:
+    m=175
+
+elif python_script.listee[8]<2000:
+    m=200
+
+elif python_script.listee[8]<2500:
+    m=250
+
+elif python_script.listee[8]<3000:
+    m=300
+
+elif python_script.listee[8]<3500:
+    m=350
+
+else:
+    m=400
+
+for x in range(9):
+    ecrirea(ord,x*m)
+    ord.forward(35)
+    ecrire(abs,x)
+    abs.forward(50)
+    if x<8:
+        ord.dot(2,'black')
+        abs.dot(2,'black')
+abs.up()
+ab=abs.clone()
+ord.up()
+b=ord.clone()
+b.hideturtle()
+b.left(90)
+b.backward(-30)
+b.left(90)
+b.backward(10)
+b.down()
+b.write("Nombre de nouvelles apex")
+
+ab.hideturtle()
+ab.left(90)
+ab.backward(25)
+ab.left(90)
+ab.backward(-70)
+ab.down()
+ab.write("Nombre de \ngénération")
+ab.up()
+ab.backward(-200)
+ab.left(90)
+ab.forward(20)
+ab.down()
+ab.write("Nombre de nouvelles apex par génération")
+for n in range(len(python_script.listee)):
+    tu.goto((n+1)*50-220,(python_script.listee[n])*35/m-200)
+    tu.dot(3,'red')
+
+turtle.done()
+</script>
+
+
+
+</head>
+
+<body id="capture" onload="brython(1)">
+
+<h1>Résultat:</h1>
+
+
+<div id="demonstration" align="center" style="margin : 0px auto;width:900px;border:0px solid black;"></div>
+<div id="parametre" style="width: 700px; height: 120px">
+    <ul>
+        <li class="liste">
+            <label>Filament : </label><br>
+            <ul>
+                <li class="option">
+                    <label class="aligner">Taille moyenne :</label>
+                    {{para.taille}}
+                    <br>
+                </li>
+                <li class="option">
+                    <label class="aligner">Ecart type :</label>
+                    {{para.ecart}}
+                </li>
+            </ul>
+        </li>
+        <li class="liste">
+            <label class="aligner">Embranchement :</label>
+            {{para.embranchement}} %<br><br>
+            <label class="aligner"> Nombre d'apex :</label>
+            {{para.apex}}<br>
+        </li>
+        <li class="liste">
+            <label>Angle : </label><br>
+            <ul>
+                <li class="option">
+                    <label>θ moyenne :</label>
+                    {{ para.angle1 }}
+                    <label>Ecart type :</label>
+                    {{para.ecart1}}
+                </li>
+                <li class="option">
+                    <label>δ moyenne :</label>
+                    {{para.angle2}}
+                    <label>Ecart type :</label>
+                    {{para.ecart2}}
+                </li>
+                <li class="option">
+                    <label>β moyenne :</label>
+                    {{para.angle3}}
+                    <label>Ecart type :</label>
+                    {{para.ecart3}}
+                </li>
+            </ul>
+    </ul>
+    <div id="bouton" style="margin-top: 10px; margin-right: 58px;">
+        <input type="button" value="Sauvgarder" onclick="screen()" class="button">
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+* {
+    margin : 0;
+    padding: 0;
+}
+body {
+    background-color : rgba(113, 116, 118, 0.9);
+}
+h1 {
+    padding-top: 20px;
+    text-align: center;
+}
+#parametre {
+    width: 1050px;
+    height: 130px;
+    border: 1px solid;
+    margin : 50px auto;
+}
+.liste{
+    float: left;
+    margin-left: 25px;
+    margin-top: 5px;
+}
+ul {
+    list-style-type: none;
+}
+
+.option {
+    margin-left: 15px;
+}
+.aligner
+{
+	display: block;
+	width: 150px;
+	float: left;
+}
+.in {
+    background-color: rgba(0, 0, 0, 0.01);
+    border-radius: 3px;
+    border: 1px solid;
+    width: 35px;
+    margin-bottom: 5px;
+    text-align: justify;
+}
+img {
+    width: 7px;
+    height: 7px;
+    margin-bottom: 5px;
+}
+#bouton{
+    display: inline-block;
+    float: right;
+    margin-right: 80px;
+    margin-top: 5px;
+}
+.button{
+    background-color: rgba(0, 0, 0, 0.01);
+    border-radius: 3px;
+    border: 1px solid;
+    width : 120px
+}

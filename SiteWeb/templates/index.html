@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            Simulation
+        </title>
+        <link rel ="stylesheet" href ="static/css/acceuil.css">
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <h1>Simulation de croissance des hyphes de champignons</h1>
+        <form action="/animation"  method="post" id="parametre" style="width: 800px;">
+            {% csrf_token %}
+            <ul>
+                <li class="liste">
+                    <label>Filament : </label><br>
+                    <ul>
+                        <li class = "option">
+                            <label class="aligner">Taille moyenne :</label>
+                            <input type="number" step ="1" min="10" max="30" name="taille"  required class="in"><br>
+                        </li>
+                        <li class = "option">
+                            <label class="aligner">Ecart type :</label>
+                            <input type="number" step="1" min="0" max="20" name="ecart"  required class="in">
+                        </li>
+                    </ul>
+                </li>
+                <li class="liste">
+                    <label class="aligner">Embranchement :</label>
+                    <input type="number" step ="1" min="0" max="100" name="embarnchement"  required class="in"> %<br><br>
+                    <label class="aligner"><img src="static/imgs/interogation.png"  alt="aide" title="Le nombre d'apex à la première génération"> Nombre d'apex :</label>
+                    <input type="number" step="1" min="1" max="5"  name="nbapex"  required class="in"><br>
+                </li>
+                <li class="liste">
+                    <label>Angle : </label><br>
+                    <ul>
+                        <li class="option">
+                            <img src="static/imgs/interogation.png" alt="aide" title="Un angle d’embranchement correspond à l’angle entre l’hyphe principale (primaire) et une hyphe latérale (secondaire)"><label>θ moyenne :</label>
+                            <input type="number" name="angle1" step ="1" min="0" max="180"  required class="in">
+                            <label>Ecart type :</label>
+                            <input type="number" step ="1" min="0" max="20" name="ecart1"  required class="in">
+                        </li>
+                        <li class="option">
+                            <img src="static/imgs/interogation.png" alt="aide" title="Un angle d’embranchement correspond à l’angle entre l’hyphe principale (primaire) et une hyphe latérale (secondaire)"><label>δ moyenne :</label>
+                            <input type="number" name="angle2" step ="1" min="0" max="180"  required class="in">
+                            <label >Ecart type :</label>
+                            <input type="number" step ="1" min="0" max="20" name="ecart2"  required class="in">
+                        </li>
+                        <li class="option">
+                            <img src="static/imgs/interogation.png" alt="aide" title="l’angle permettant de mesurer la déviation de la trajectoire d’une hyphe"><label>β moyenne :</label>
+                            <input type="number" name="angle3" step ="1" min="0" max="180"  required class="in">
+                            <label >Ecart type :</label>
+                            <input type="number" step ="1" min="0" max="20" name="ecart3"  required class="in">
+                        </li>
+                    </ul>
+
+            </ul>
+            <div id="bouton" style="margin-right: 55px">
+                <input type="submit" value="Lancer l'animation"  class="button">
+                <input type="reset" value="Réinitialiser"   class="button">
+            </div>
+        </form>
+    </body>
+</html>
